@@ -75,7 +75,7 @@ public class CustomPointCloudListener : MonoBehaviour, ITangoDepth
         m_initCameraPosition = m_mainCamera.transform.position;
 
         m_coordinatePair.baseFrame = TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_START_OF_SERVICE;
-        m_coordinatePair.targetFrame = TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_DEVICE;//FIX should be depth sensor
+        m_coordinatePair.targetFrame = TangoEnums.TangoCoordinateFrameType.TANGO_COORDINATE_FRAME_DEVICE;//FIX should be depth sensorsd
 
         m_quads = new GameObject[m_insertionCount];
         float size = 0.02f;
@@ -96,7 +96,7 @@ public class CustomPointCloudListener : MonoBehaviour, ITangoDepth
         if (m_playbackData)
         {
             m_recordData = false;
-            string filename = m_loadSessionID +".dat";
+            string filename = m_loadSessionID +".txt";
             m_fileReader = new BinaryReader(File.Open(Application.persistentDataPath + "/" + filename, FileMode.Open));
             m_debugText = "Loading from: " + filename + " " + m_fileReader.ToString();
         }
@@ -108,7 +108,7 @@ public class CustomPointCloudListener : MonoBehaviour, ITangoDepth
     void PrepareRecording()
     {
         m_sessionTimestamp = DateTime.Now.ToString("yyyy_MM_dd_HHmmss");
-        string filename = m_sessionTimestamp+".dat";
+        string filename = m_sessionTimestamp+".txt";
         if (m_fileWriter != null)
         {
             m_fileWriter.Close();
@@ -371,6 +371,18 @@ public class CustomPointCloudListener : MonoBehaviour, ITangoDepth
             writer.Write(pointData[3*i+2]);
         }
         writer.Flush();
+
+		string[] lines = new string[10];
+		for (int i = 0; i < 10; i++) {
+			string line = "(";
+			line += pointData[3*i];
+			line = line + "," + pointData[3*i+1];
+			line = line + "," + pointData[3*i+2];
+			line += ")\n";
+			lines[i] = line;
+		}
+
+		File.WriteAllText (Application.persistentDataPath + "/log.txt", string.Join("",lines));
     }
     
     
